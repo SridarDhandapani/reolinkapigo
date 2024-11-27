@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/enum"
-	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/network/rest"
+	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/network/rest"
 	"net/url"
 )
 

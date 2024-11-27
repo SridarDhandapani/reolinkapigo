@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/models"
-	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/network/rest"
+	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/network/rest"
 )
 
 type NetworkMixin struct {
@@ -126,7 +126,7 @@ func (nm *NetworkMixin) GetWifi() func(handler *rest.RestHandler) (*models.Wifi,
 		payload := map[string]interface{}{
 			"cmd":    "GetWifi",
 			"action": 1,
-			"param": map[string]interface{}{},
+			"param":  map[string]interface{}{},
 		}
 
 		result, err := handler.Request("POST", payload, "GetWifi")
@@ -153,7 +153,7 @@ func (nm *NetworkMixin) ScanWifi() func(handler *rest.RestHandler) (*models.Scan
 		payload := map[string]interface{}{
 			"cmd":    "ScanWifi",
 			"action": 1,
-			"param": map[string]interface{}{},
+			"param":  map[string]interface{}{},
 		}
 
 		result, err := handler.Request("POST", payload, "ScanWifi")
@@ -180,7 +180,7 @@ func (nm *NetworkMixin) GetNetworkGeneral() func(handler *rest.RestHandler) (*mo
 		payload := map[string]interface{}{
 			"cmd":    "GetLocalLink",
 			"action": 0,
-			"param": map[string]interface{}{},
+			"param":  map[string]interface{}{},
 		}
 
 		resp, err := handler.Request("POST", payload, "GetLocalLink")
@@ -207,7 +207,7 @@ func (nm *NetworkMixin) GetNetworkDDNS() func(handler *rest.RestHandler) (*model
 		payload := map[string]interface{}{
 			"cmd":    "GetDdns",
 			"action": 0,
-			"param": map[string]interface{}{},
+			"param":  map[string]interface{}{},
 		}
 
 		resp, err := handler.Request("POST", payload, "GetDdns")
@@ -234,7 +234,7 @@ func (nm *NetworkMixin) GetNetworkNTP() func(handler *rest.RestHandler) (*models
 		payload := map[string]interface{}{
 			"cmd":    "GetNtp",
 			"action": 0,
-			"param": map[string]interface{}{},
+			"param":  map[string]interface{}{},
 		}
 
 		resp, err := handler.Request("POST", payload, "GetNtp")
@@ -261,7 +261,7 @@ func (nm *NetworkMixin) GetNetworkEmail() func(handler *rest.RestHandler) (*mode
 		payload := map[string]interface{}{
 			"cmd":    "GetEmail",
 			"action": 0,
-			"param": map[string]interface{}{},
+			"param":  map[string]interface{}{},
 		}
 
 		resp, err := handler.Request("POST", payload, "GetEmail")
@@ -288,7 +288,7 @@ func (nm *NetworkMixin) GetNetworkFTP() func(handler *rest.RestHandler) (*models
 		payload := map[string]interface{}{
 			"cmd":    "GetFtp",
 			"action": 0,
-			"param": map[string]interface{}{},
+			"param":  map[string]interface{}{},
 		}
 
 		resp, err := handler.Request("POST", payload, "GetFtp")
@@ -315,7 +315,7 @@ func (nm *NetworkMixin) GetNetworkPush() func(handler *rest.RestHandler) (*model
 		payload := map[string]interface{}{
 			"cmd":    "GetPush",
 			"action": 0,
-			"param": map[string]interface{}{},
+			"param":  map[string]interface{}{},
 		}
 
 		resp, err := handler.Request("POST", payload, "GetPush")

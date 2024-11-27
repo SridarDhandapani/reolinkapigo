@@ -1,7 +1,7 @@
 package examples
 
 import (
-	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/network/rest"
+	rest2 "github.com/ReolinkCameraAPI/reolinkapigo/pkg/network/rest"
 	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/reolinkapi"
 )
 
@@ -12,11 +12,11 @@ func Socks5Example() {
 		reolinkapi.WithUsername("foo"),
 		reolinkapi.WithPassword("bar"),
 		reolinkapi.WithNetworkOptions(
-			rest.WithProxyScheme(rest.SOCKS5),
-			rest.WithProxyHost("127.0.0.1"),
-			rest.WithProxyPort(5942),
-			rest.WithProxyUsername("foo"),
-			rest.WithProxyPassword("bar"),
+			rest2.WithProxyScheme(rest2.SOCKS5),
+			rest2.WithProxyHost("127.0.0.1"),
+			rest2.WithProxyPort(5942),
+			rest2.WithProxyUsername("foo"),
+			rest2.WithProxyPassword("bar"),
 		))
 
 	if err != nil {

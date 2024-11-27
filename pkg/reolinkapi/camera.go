@@ -3,7 +3,7 @@ package reolinkapi
 import (
 	"fmt"
 	"github.com/ReolinkCameraAPI/reolinkapigo/internal/app"
-	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/network/rest"
+	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/network/rest"
 	"golang.org/x/net/context"
 	"time"
 )
