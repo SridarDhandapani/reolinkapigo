@@ -239,13 +239,12 @@ func (rh *RestHandler) RequestRaw(method string, payload interface{}, params url
 	req.Header = headers
 
 	var client *http.Client
+	tr := http.DefaultTransport.(*http.Transport).Clone()
+	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	// https://stackoverflow.com/questions/51845690/how-to-program-go-to-use-a-proxy-when-using-a-custom-transport
 	// https://gist.github.com/ometa/71d23ed48c03c003f6e4910648612859
 	if rh.proxy.host != "" {
-
-		tr := http.DefaultTransport.(*http.Transport).Clone()
-		tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 		var proxyConcat string
 
@@ -319,7 +318,7 @@ func (rh *RestHandler) RequestRaw(method string, payload interface{}, params url
 		}
 
 	} else {
-		client = &http.Client{}
+		client = &http.Client{Transport: tr}
 	}
 
 	resp, err := client.Do(req)
