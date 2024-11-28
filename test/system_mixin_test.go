@@ -181,7 +181,7 @@ func registerMockDeviceInformation() {
 				Name:            "Camera1_withpersonality",
 				Serial:          "00000000000000",
 				Type:            "IPC",
-				Wifi:            true,
+				Wifi:            1,
 			}
 
 			generalData := map[string]interface{}{

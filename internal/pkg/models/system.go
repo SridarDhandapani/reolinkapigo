@@ -45,7 +45,7 @@ type DeviceInformation struct {
 	Name            string `json:"name"`
 	Serial          string `json:"serial"`
 	Type            string `json:"type"`
-	Wifi            bool   `json:"wifi"`
+	Wifi            int    `json:"wifi"`
 }
 
 type DevicePerformanceInformation struct {
