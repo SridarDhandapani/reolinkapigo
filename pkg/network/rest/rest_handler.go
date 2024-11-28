@@ -36,6 +36,7 @@ type options struct {
 	scheme   Scheme
 	token    string
 	proxy    *optionsProxy
+	client   *http.Client
 }
 
 type OptionRestHandler interface {
@@ -142,6 +143,17 @@ func WithProxyPort(port int) OptionRestHandler {
 	return proxyPort(port)
 }
 
+type clientOption struct {
+	client *http.Client
+}
+
+func (c clientOption) apply(opts *options) {
+	opts.client = c.client
+}
+func WithClient(client *http.Client) OptionRestHandler {
+	return clientOption{client}
+}
+
 type RestHandler struct {
 	*options
 }
@@ -239,86 +251,90 @@ func (rh *RestHandler) RequestRaw(method string, payload interface{}, params url
 	req.Header = headers
 
 	var client *http.Client
-	tr := http.DefaultTransport.(*http.Transport).Clone()
-	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
-	// https://stackoverflow.com/questions/51845690/how-to-program-go-to-use-a-proxy-when-using-a-custom-transport
-	// https://gist.github.com/ometa/71d23ed48c03c003f6e4910648612859
-	if rh.proxy.host != "" {
-
-		var proxyConcat string
-
-		switch rh.proxy.scheme {
-		case HTTP, HTTPS:
-			proxyConcat = fmt.Sprintf("%s://", rh.proxy.scheme)
-
-			if rh.proxy.username != "" {
-				proxyConcat = fmt.Sprintf("%s%s:%s@%s:%d",
-					proxyConcat,
-					rh.proxy.username,
-					rh.proxy.password,
-					rh.proxy.host,
-					rh.proxy.port)
-
-			} else {
-				proxyConcat = fmt.Sprintf("%s%s:%d",
-					proxyConcat,
-					rh.proxy.host,
-					rh.proxy.port)
-			}
-
-			proxyUrl, err := url.Parse(proxyConcat)
-
-			if err != nil {
-				return nil, err
-			}
-
-			tr.Proxy = http.ProxyURL(proxyUrl)
-			client = &http.Client{Transport: tr}
-
-			break
-		case SOCKS5:
-			proxyConcat = fmt.Sprintf("%s:%d",
-				rh.proxy.host,
-				rh.proxy.port)
-
-			networkType := rh.proxy.protocol.String()
-
-			dialer, err := proxy.SOCKS5(networkType, proxyConcat, nil, proxy.Direct)
-
-			if contextDialer, ok := dialer.(proxy.ContextDialer); ok {
-				tr.DialContext = contextDialer.DialContext
-			} else {
-				return nil, fmt.Errorf("failed to create socks5 dialer")
-			}
-
-			if err != nil {
-				return nil, nil
-			}
-
-			break
-
-		default:
-			proxyConcat = fmt.Sprintf("%s://", rh.proxy.scheme)
-
-			if rh.proxy.username != "" {
-				proxyConcat = fmt.Sprintf("%s%s:%s@%s:%d",
-					proxyConcat,
-					rh.proxy.username,
-					rh.proxy.password,
-					rh.proxy.host,
-					rh.proxy.port)
-
-			} else {
-				proxyConcat = fmt.Sprintf("%s%s:%d",
-					proxyConcat,
-					rh.proxy.host,
-					rh.proxy.port)
-			}
-		}
-
+	if rh.client != nil {
+		client = rh.client
 	} else {
-		client = &http.Client{Transport: tr}
+		// https://stackoverflow.com/questions/51845690/how-to-program-go-to-use-a-proxy-when-using-a-custom-transport
+		// https://gist.github.com/ometa/71d23ed48c03c003f6e4910648612859
+		if rh.proxy.host != "" {
+			tr := http.DefaultTransport.(*http.Transport).Clone()
+			tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+
+			var proxyConcat string
+
+			switch rh.proxy.scheme {
+			case HTTP, HTTPS:
+				proxyConcat = fmt.Sprintf("%s://", rh.proxy.scheme)
+
+				if rh.proxy.username != "" {
+					proxyConcat = fmt.Sprintf("%s%s:%s@%s:%d",
+						proxyConcat,
+						rh.proxy.username,
+						rh.proxy.password,
+						rh.proxy.host,
+						rh.proxy.port)
+
+				} else {
+					proxyConcat = fmt.Sprintf("%s%s:%d",
+						proxyConcat,
+						rh.proxy.host,
+						rh.proxy.port)
+				}
+
+				proxyUrl, err := url.Parse(proxyConcat)
+
+				if err != nil {
+					return nil, err
+				}
+
+				tr.Proxy = http.ProxyURL(proxyUrl)
+				client = &http.Client{Transport: tr}
+
+				break
+			case SOCKS5:
+				proxyConcat = fmt.Sprintf("%s:%d",
+					rh.proxy.host,
+					rh.proxy.port)
+
+				networkType := rh.proxy.protocol.String()
+
+				dialer, err := proxy.SOCKS5(networkType, proxyConcat, nil, proxy.Direct)
+
+				if contextDialer, ok := dialer.(proxy.ContextDialer); ok {
+					tr.DialContext = contextDialer.DialContext
+				} else {
+					return nil, fmt.Errorf("failed to create socks5 dialer")
+				}
+
+				if err != nil {
+					return nil, nil
+				}
+
+				break
+
+			default:
+				proxyConcat = fmt.Sprintf("%s://", rh.proxy.scheme)
+
+				if rh.proxy.username != "" {
+					proxyConcat = fmt.Sprintf("%s%s:%s@%s:%d",
+						proxyConcat,
+						rh.proxy.username,
+						rh.proxy.password,
+						rh.proxy.host,
+						rh.proxy.port)
+
+				} else {
+					proxyConcat = fmt.Sprintf("%s%s:%d",
+						proxyConcat,
+						rh.proxy.host,
+						rh.proxy.port)
+				}
+			}
+
+		} else {
+			client = &http.Client{}
+		}
 	}
 
 	resp, err := client.Do(req)
