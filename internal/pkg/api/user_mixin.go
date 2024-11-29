@@ -3,14 +3,14 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/enum"
 	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/models"
+	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/enum"
 	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/network/rest"
 )
 
 type UserMixin struct{}
 
-// Retrieves a slice of Online Users
+// GetOnlineUsers Retrieves a slice of Online Users
 func (um *UserMixin) GetOnlineUsers() func(handler *rest.RestHandler) ([]*models.User, error) {
 	return func(handler *rest.RestHandler) ([]*models.User, error) {
 		payload := map[string]interface{}{
@@ -37,7 +37,7 @@ func (um *UserMixin) GetOnlineUsers() func(handler *rest.RestHandler) ([]*models
 	}
 }
 
-// Retrieves a slice of Users
+// GetUsers Retrieves a slice of Users
 func (um *UserMixin) GetUsers() func(handler *rest.RestHandler) ([]*models.User, error) {
 	return func(handler *rest.RestHandler) ([]*models.User, error) {
 		payload := map[string]interface{}{
@@ -64,7 +64,7 @@ func (um *UserMixin) GetUsers() func(handler *rest.RestHandler) ([]*models.User,
 	}
 }
 
-// Add a User to the camera
+// AddUser Add a User to the camera
 func (um *UserMixin) AddUser(
 	username string,
 	password string,
@@ -100,8 +100,8 @@ func (um *UserMixin) AddUser(
 	}
 }
 
-// Update the User's password
-func (um *UserMixin) UpdateUserPassword(username string, password string) func(handler *rest.RestHandler) (bool,
+// UpdateUserPassword Update the User's password
+func (um *UserMixin) UpdateUserPassword(username, new, old string) func(handler *rest.RestHandler) (bool,
 	error) {
 	return func(handler *rest.RestHandler) (bool, error) {
 		payload := map[string]interface{}{
@@ -109,8 +109,9 @@ func (um *UserMixin) UpdateUserPassword(username string, password string) func(h
 			"action": 0,
 			"param": map[string]interface{}{
 				"User": map[string]interface{}{
-					"userName": username,
-					"password": password,
+					"userName":    username,
+					"newPassword": new,
+					"oldPassword": old,
 				},
 			},
 		}
@@ -137,7 +138,7 @@ func (um *UserMixin) UpdateUserPassword(username string, password string) func(h
 	}
 }
 
-// Delete the User account
+// DeleteUser Delete the User account
 func (um *UserMixin) DeleteUser(username string) func(handler *rest.RestHandler) (bool, error) {
 	return func(handler *rest.RestHandler) (bool, error) {
 		payload := map[string]interface{}{

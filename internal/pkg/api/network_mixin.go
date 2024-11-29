@@ -4,24 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/models"
+	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/enum"
 	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/network/rest"
+	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/options"
 )
 
 type NetworkMixin struct {
 }
 
-type networkPorts struct {
-	http  int
-	https int
-	media int
-	onvif int
-	rtmp  int
-	rtsp  int
-}
-
-type NetworkPortOptions func(*networkPorts)
-
-// Set the camera network ports using the NetworkPortOption<prop> functions
+// SetNetworkPort Set the camera network ports using the NetworkPortOption<prop> functions
 // Defaults are automatically for the excluded networkPortOptions
 // http: 80
 // https: 443
@@ -29,17 +20,23 @@ type NetworkPortOptions func(*networkPorts)
 // onvif: 8000
 // rtmp: 1935
 // rtsp: 554
-func (nm *NetworkMixin) SetNetworkPort(networkPortOptions ...NetworkPortOptions) func(handler *rest.RestHandler) (bool,
+// Only http & rtsp ports are enabled by default
+func (nm *NetworkMixin) SetNetworkPort(networkPortOptions ...options.NetworkPortOption) func(handler *rest.RestHandler) (bool,
 	error) {
 
 	// Defaults
-	networkPorts := &networkPorts{
-		http:  80,
-		https: 443,
-		media: 9000,
-		onvif: 8000,
-		rtmp:  1935,
-		rtsp:  554,
+	networkPorts := &models.NetworkPort{
+		HttpEnable:  enum.Enabled,
+		HttpPort:    80,
+		HttpsEnable: enum.Disabled,
+		HttpsPort:   443,
+		MediaPort:   9000,
+		OnvifEnable: enum.Disabled,
+		OnvifPort:   8000,
+		RtmpEnable:  enum.Disabled,
+		RtmpPort:    1935,
+		RtspEnable:  enum.Enabled,
+		RtspPort:    554,
 	}
 
 	for _, op := range networkPortOptions {
@@ -52,12 +49,17 @@ func (nm *NetworkMixin) SetNetworkPort(networkPortOptions ...NetworkPortOptions)
 			"action": 0,
 			"param": map[string]interface{}{
 				"NetPort": map[string]interface{}{
-					"httpPort":  networkPorts.http,
-					"httpsPort": networkPorts.https,
-					"mediaPort": networkPorts.media,
-					"onvifPort": networkPorts.onvif,
-					"rtmpPort":  networkPorts.rtmp,
-					"rtspPort":  networkPorts.rtsp,
+					"httpEnable":  networkPorts.HttpsEnable,
+					"httpPort":    networkPorts.HttpPort,
+					"httpsEnable": networkPorts.HttpsEnable,
+					"httpsPort":   networkPorts.HttpsPort,
+					"mediaPort":   networkPorts.MediaPort,
+					"onvifEnable": networkPorts.OnvifEnable,
+					"onvifPort":   networkPorts.OnvifPort,
+					"rtmpEnable":  networkPorts.RtmpEnable,
+					"rtmpPort":    networkPorts.RtmpPort,
+					"rtspEnable":  networkPorts.RtspEnable,
+					"rtspPort":    networkPorts.RtspPort,
 				},
 			},
 		}
@@ -174,7 +176,7 @@ func (nm *NetworkMixin) ScanWifi() func(handler *rest.RestHandler) (*models.Scan
 	}
 }
 
-// Get the camera's general network information
+// GetNetworkGeneral Get the camera's general network information
 func (nm *NetworkMixin) GetNetworkGeneral() func(handler *rest.RestHandler) (*models.NetworkGeneral, error) {
 	return func(handler *rest.RestHandler) (*models.NetworkGeneral, error) {
 		payload := map[string]interface{}{
@@ -198,6 +200,33 @@ func (nm *NetworkMixin) GetNetworkGeneral() func(handler *rest.RestHandler) (*mo
 		}
 
 		return networkGeneral, nil
+	}
+}
+
+// GetNetworkPort Get the camera's network ports status and value
+func (nm *NetworkMixin) GetNetworkPort() func(handler *rest.RestHandler) (*models.NetworkPort, error) {
+	return func(handler *rest.RestHandler) (*models.NetworkPort, error) {
+		payload := map[string]interface{}{
+			"cmd":    "GetNetPort",
+			"action": 0,
+			"param":  map[string]interface{}{},
+		}
+
+		resp, err := handler.Request("POST", payload, "GetNetPort")
+
+		if err != nil {
+			return nil, err
+		}
+
+		var networkPort *models.NetworkPort
+
+		err = json.Unmarshal(resp.Value["NetPort"], &networkPort)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return networkPort, nil
 	}
 }
 
@@ -341,53 +370,5 @@ func (nm *NetworkMixin) GetNetworkPush() func(handler *rest.RestHandler) (*model
 func (nm *NetworkMixin) GetNetworkStatus() func(handler *rest.RestHandler) (*models.NetworkGeneral, error) {
 	return func(handler *rest.RestHandler) (*models.NetworkGeneral, error) {
 		return nm.GetNetworkGeneral()(handler)
-	}
-}
-
-// An option for SetNetworkPort to set the httpPort
-// Default value of httpPort is 80
-func NetworkPortOptionHttp(httpPort int) NetworkPortOptions {
-	return func(nm *networkPorts) {
-		nm.http = httpPort
-	}
-}
-
-// An option for SetNetworkPort to set the httpsPort
-// Default value of httpsPort is 443
-func NetworkPortOptionHttps(https int) NetworkPortOptions {
-	return func(nm *networkPorts) {
-		nm.https = https
-	}
-}
-
-// An option for SetNetworkPort to set the mediaPort
-// Default value of mediaPort is 9000
-func NetworkPortOptionMedia(media int) NetworkPortOptions {
-	return func(nm *networkPorts) {
-		nm.media = media
-	}
-}
-
-// An option for SetNetworkPort to set the onvifPort
-// Default value of onvifPort is 8000
-func NetworkPortOptionOnvif(onvif int) NetworkPortOptions {
-	return func(nm *networkPorts) {
-		nm.onvif = onvif
-	}
-}
-
-// An option for SetNetworkPort to set the rtmpPort
-// Default value of rtmpPort is 1935
-func NetworkPortOptionRtmp(rtmp int) NetworkPortOptions {
-	return func(nm *networkPorts) {
-		nm.rtmp = rtmp
-	}
-}
-
-// An option for SetNetworkPort to set the rtspPort
-// Default value of rtspPort is 554
-func NetworkPortOptionRtsp(rtsp int) NetworkPortOptions {
-	return func(nm *networkPorts) {
-		nm.rtsp = rtsp
 	}
 }

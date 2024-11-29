@@ -3,8 +3,8 @@ package test
 import (
 	"encoding/json"
 	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/api"
-	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/enum"
 	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/models"
+	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/enum"
 	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/reolinkapi"
 	"github.com/jarcoal/httpmock"
 	"io/ioutil"

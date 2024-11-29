@@ -3,33 +3,33 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/enum"
 	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/models"
+	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/enum"
 	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/network/rest"
+	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/options"
 )
 
 type DisplayMixin struct {
 }
 
-type osdChannel struct {
-	Enable bool
-	Name   string
-	Pos    string
-}
-
-type osdTime struct {
-	Enable bool
-	Pos    string
-}
-
-type osd struct {
-	BgColor    bool
-	Channel    int
-	OsdChannel osdChannel
-	OsdTime    osdTime
-}
-
-type OptionOsd func(*osd)
+//type osdChannel struct {
+//	Enable int
+//	Name   string
+//	Pos    string
+//}
+//
+//type osdTime struct {
+//	Enable int
+//	Pos    string
+//}
+//
+//type osd struct {
+//	BgColor    int
+//	Channel    int
+//	OsdChannel osdChannel
+//	OsdTime    osdTime
+//	Watermark  int
+//}
 
 // Get the camera's Osd information
 func (dm *DisplayMixin) GetOSD() func(handler *rest.RestHandler) (*models.Osd, error) {
@@ -89,22 +89,23 @@ func (dm *DisplayMixin) GetMask() func(handler *rest.RestHandler) (*models.MaskD
 	}
 }
 
-// Set the camera's Osd
-func (dm *DisplayMixin) SetOSD(osdOption ...OptionOsd) func(handler *rest.RestHandler) (bool,
+// SetOSD Set the camera's on-screen display
+func (dm *DisplayMixin) SetOSD(osdOption ...options.OsdOption) func(handler *rest.RestHandler) (bool,
 	error) {
 
-	osd := &osd{
-		BgColor: false,
+	osd := &models.Osd{
+		BgColor: enum.Disabled,
 		Channel: 0,
-		OsdChannel: osdChannel{
-			Enable: true,
-			Name:   "",
+		OsdChannel: models.OsdChannel{
+			Enable: enum.Disabled,
+			Name:   "Camera1",
 			Pos:    "Lower Right",
 		},
-		OsdTime: osdTime{
-			Enable: false,
-			Pos:    "Lower Right",
+		OsdTime: models.OsdTime{
+			Enable: enum.Disabled,
+			Pos:    "Top Center",
 		},
+		Watermark: enum.Disabled,
 	}
 
 	for _, op := range osdOption {
@@ -128,6 +129,7 @@ func (dm *DisplayMixin) SetOSD(osdOption ...OptionOsd) func(handler *rest.RestHa
 						"enable": osd.OsdTime.Enable,
 						"pos":    osd.OsdTime.Pos,
 					},
+					"watermark": osd.Watermark,
 				},
 			},
 		}
@@ -151,54 +153,5 @@ func (dm *DisplayMixin) SetOSD(osdOption ...OptionOsd) func(handler *rest.RestHa
 		}
 
 		return false, fmt.Errorf("camera could not set osd. camera responded with %v", result.Value)
-	}
-}
-
-// Set the OSD background color on or off
-func SetOsdOptionBgColor(bgColor bool) OptionOsd {
-	return func(o *osd) {
-		o.BgColor = bgColor
-	}
-}
-
-// Set the OSD channel
-func SetOsdOptionsChannel(channel int) OptionOsd {
-	return func(o *osd) {
-		o.Channel = channel
-	}
-}
-
-// Set the OSD channel on or off
-func SetOsdOptionsChannelEnable(enable bool) OptionOsd {
-	return func(o *osd) {
-		o.OsdChannel.Enable = enable
-	}
-}
-
-// Set the OSD channel name
-func SetOsdOptionsChannelName(name string) OptionOsd {
-	return func(o *osd) {
-		o.OsdChannel.Name = name
-	}
-}
-
-// Set the OSD channel position
-func SetOsdOptionsChannelPos(position enum.OsdPosition) OptionOsd {
-	return func(o *osd) {
-		o.OsdChannel.Pos = position.Value()
-	}
-}
-
-// Set the OSD time as on or off
-func SetOsdOptionsTimeEnable(enable bool) OptionOsd {
-	return func(o *osd) {
-		o.OsdTime.Enable = enable
-	}
-}
-
-// Set the OSD time position
-func SetOsdOptionsTimePos(position enum.OsdPosition) OptionOsd {
-	return func(o *osd) {
-		o.OsdTime.Pos = position.Value()
 	}
 }

@@ -2,8 +2,8 @@ package test
 
 import (
 	"encoding/json"
-	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/enum"
 	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/models"
+	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/enum"
 	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/reolinkapi"
 	"github.com/jarcoal/httpmock"
 	"io/ioutil"
@@ -37,15 +37,15 @@ func registerMockGetOsd() {
 			}
 
 			osdInfo := &models.Osd{
-				BgColor: false,
+				BgColor: enum.Disabled,
 				Channel: 0,
 				OsdChannel: models.OsdChannel{
-					Enable: false,
+					Enable: enum.Disabled,
 					Name:   "FarRight",
 					Pos:    enum.LOWER_RIGHT.Value(),
 				},
 				OsdTime: models.OsdTime{
-					Enable: false,
+					Enable: enum.Disabled,
 					Pos:    enum.LOWER_LEFT.Value(),
 				},
 			}
@@ -251,6 +251,5 @@ func TestDisplayMixin_SetOSD(t *testing.T) {
 	}
 
 	t.Logf("SetOSD %v", ok)
-
 
 }

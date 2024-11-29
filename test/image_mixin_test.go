@@ -3,7 +3,7 @@ package test
 import (
 	"encoding/json"
 	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/api"
-	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/enum"
+	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/enum"
 	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/reolinkapi"
 	"github.com/jarcoal/httpmock"
 	"io/ioutil"
@@ -133,7 +133,7 @@ func TestImageMixin_SetAdvanceImageSettings(t *testing.T) {
 		api.ImageAdvancedOptionDayNight(enum.DAY_NIGHT_AUTO),
 		api.ImageAdvancedOptionBacklight(enum.DYNAMIC_RANGE_CONTROL),
 		api.ImageAdvancedOptionBlc(1),
-		)(camera.RestHandler)
+	)(camera.RestHandler)
 
 	if err != nil {
 		t.Error(err)

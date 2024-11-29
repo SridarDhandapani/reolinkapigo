@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/net/proxy"
@@ -203,15 +204,20 @@ func (rh *RestHandler) Request(method string, payload interface{}, command strin
 		return nil, err
 	}
 
-	var result []*GeneralData
+	var results []*GeneralData
 
-	err = json.Unmarshal(respBody, &result)
+	err = json.Unmarshal(respBody, &results)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return result[0], nil
+	result := results[0]
+	if result.Code != 0 {
+		return nil, errors.New(result.Error.Detail)
+	}
+
+	return result, nil
 }
 
 func (rh *RestHandler) RequestRaw(method string, payload interface{}, params url.Values) ([]byte, error) {

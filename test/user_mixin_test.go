@@ -2,8 +2,8 @@ package test
 
 import (
 	"encoding/json"
-	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/enum"
 	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/models"
+	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/enum"
 	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/reolinkapi"
 	"github.com/jarcoal/httpmock"
 	"io/ioutil"
@@ -368,7 +368,7 @@ func TestUserMixin_UpdateUserPassword(t *testing.T) {
 
 	registerMockUpdateUserPassword()
 
-	ok, err := camera.UpdateUserPassword("user1234", "12345")(camera.RestHandler)
+	ok, err := camera.UpdateUserPassword("user1234", "12345", "")(camera.RestHandler)
 
 	if err != nil {
 		t.Error(err)
@@ -392,7 +392,7 @@ func TestUserMixin_DeleteUser(t *testing.T) {
 	if camera.GetToken() == "12345" {
 		t.Logf("login successful")
 	}
-	
+
 	registerMockDeleteUser()
 
 	ok, err := camera.DeleteUser("user1234")(camera.RestHandler)

@@ -14,3 +14,14 @@ const (
 func (op OsdPosition) Value() string {
 	return []string{"Upper Left", "Top Center", "Upper Right", "Lower Left", "Bottom Center", "Lower Right"}[op]
 }
+
+type Toggle uint
+
+const (
+	Disabled Toggle = iota
+	Enabled
+)
+
+func (t Toggle) String() string {
+	return [...]string{"disabled", "enabled"}[t]
+}

@@ -1,5 +1,7 @@
 package models
 
+import "github.com/ReolinkCameraAPI/reolinkapigo/pkg/enum"
+
 // TODO: update with its actual data structure
 type ScanWifi struct {
 }
@@ -74,4 +76,18 @@ type NetworkFTP struct {
 
 type NetworkPush struct {
 	Schedule Schedule `json:"schedule"`
+}
+
+type NetworkPort struct {
+	HttpEnable  enum.Toggle `json:"httpEnable"`
+	HttpPort    int         `json:"httpPort"`
+	HttpsEnable enum.Toggle `json:"httpsEnable"`
+	HttpsPort   int         `json:"httpsPort"`
+	MediaPort   int         `json:"mediaPort"`
+	OnvifEnable enum.Toggle `json:"onvifEnable"`
+	OnvifPort   int         `json:"onvifPort"`
+	RtmpEnable  enum.Toggle `json:"rtmpEnable"`
+	RtmpPort    int         `json:"rtmpPort"`
+	RtspEnable  enum.Toggle `json:"rtspEnable"`
+	RtspPort    int         `json:"rtspPort"`
 }

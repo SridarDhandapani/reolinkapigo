@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/models"
 	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/network/rest"
-	"log"
 )
 
 type AuthMixin struct {
@@ -41,8 +40,6 @@ func (am *AuthMixin) Login() func(*rest.RestHandler) (bool, error) {
 		if err != nil {
 			return false, err
 		}
-
-		log.Printf("token data unmarshalled %v", tokenData)
 
 		if tokenData == nil {
 			return false, fmt.Errorf("login failed")

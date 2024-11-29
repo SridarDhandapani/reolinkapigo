@@ -2,8 +2,8 @@ package api
 
 import (
 	"fmt"
-	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/enum"
 	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/network/rtsp"
+	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/enum"
 	"github.com/deepch/vdk/av"
 )
 
