@@ -63,3 +63,7 @@ type DeviceGeneralInformation struct {
 	Dst  *DstInformation
 	Norm *DeviceNorm
 }
+
+type DeviceName struct {
+	Name string `json:"name"`
+}

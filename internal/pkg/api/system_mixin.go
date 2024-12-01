@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ReolinkCameraAPI/reolinkapigo/internal/pkg/models"
 	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/network/rest"
+	"github.com/ReolinkCameraAPI/reolinkapigo/pkg/options"
 )
 
 type SystemMixin struct{}
@@ -187,5 +188,76 @@ func (sm *SystemMixin) GetDstInformation() func(handler *rest.RestHandler) (*mod
 			return nil, nil, err
 		}
 		return dstData, timeData, nil
+	}
+}
+
+// GetDeviceName Get the camera name
+func (sm *SystemMixin) GetDeviceName() func(handler *rest.RestHandler) (*models.DeviceName, error) {
+	return func(handler *rest.RestHandler) (*models.DeviceName, error) {
+		payload := map[string]interface{}{
+			"cmd":    "GetDevName",
+			"action": 0,
+			"param":  map[string]interface{}{},
+		}
+
+		result, err := handler.Request("POST", payload, "GetDevName")
+
+		if err != nil {
+			return nil, err
+		}
+
+		var devName *models.DeviceName
+
+		err = json.Unmarshal(result.Value["DevName"], &devName)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return devName, nil
+	}
+}
+
+func (nm *NetworkMixin) SetDeviceName(deviceNameOption ...options.DeviceNameOption) func(handler *rest.RestHandler) (bool,
+	error) {
+
+	// Defaults
+	deviceName := &models.DeviceName{
+		Name: "Camera1",
+	}
+	for _, op := range deviceNameOption {
+		op(deviceName)
+	}
+
+	return func(handler *rest.RestHandler) (bool, error) {
+		payload := map[string]interface{}{
+			"cmd":    "SetDevName",
+			"action": 0,
+			"param": map[string]interface{}{
+				"DevName": map[string]interface{}{
+					"name": deviceName.Name,
+				},
+			},
+		}
+
+		result, err := handler.Request("POST", payload, "SetNetPort")
+
+		if err != nil {
+			return false, err
+		}
+
+		var respCode int
+
+		err = json.Unmarshal(result.Value["rspCode"], &respCode)
+
+		if err != nil {
+			return false, err
+		}
+
+		if respCode == 200 {
+			return true, nil
+		}
+
+		return false, fmt.Errorf("camera could not set device name. camera responded with %v", result.Value)
 	}
 }

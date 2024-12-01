@@ -20,7 +20,7 @@ type NetworkMixin struct {
 // onvif: 8000
 // rtmp: 1935
 // rtsp: 554
-// Only http & rtsp ports are enabled by default
+// Only http & https ports are enabled by default
 func (nm *NetworkMixin) SetNetworkPort(networkPortOptions ...options.NetworkPortOption) func(handler *rest.RestHandler) (bool,
 	error) {
 
@@ -28,14 +28,14 @@ func (nm *NetworkMixin) SetNetworkPort(networkPortOptions ...options.NetworkPort
 	networkPorts := &models.NetworkPort{
 		HttpEnable:  enum.Enabled,
 		HttpPort:    80,
-		HttpsEnable: enum.Disabled,
+		HttpsEnable: enum.Enabled,
 		HttpsPort:   443,
 		MediaPort:   9000,
 		OnvifEnable: enum.Disabled,
 		OnvifPort:   8000,
 		RtmpEnable:  enum.Disabled,
 		RtmpPort:    1935,
-		RtspEnable:  enum.Enabled,
+		RtspEnable:  enum.Disabled,
 		RtspPort:    554,
 	}
 
