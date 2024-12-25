@@ -10,7 +10,6 @@ type ApiHandler struct {
 	*api.DeviceMixin
 	*api.DisplayMixin
 	*api.ImageMixin
-	*api.RtspMixin
 	*api.NetworkMixin
 	*api.PtzMixin
 	*api.RecordingMixin
@@ -35,11 +34,6 @@ func NewApiHandler(username string, password string, host string, restOpts ...re
 		&api.DeviceMixin{},
 		&api.DisplayMixin{},
 		&api.ImageMixin{},
-		&api.RtspMixin{
-			Host:     host,
-			Username: username,
-			Password: password,
-		},
 		&api.NetworkMixin{},
 		&api.PtzMixin{},
 		&api.RecordingMixin{},
