@@ -218,6 +218,7 @@ func (sm *SystemMixin) GetDeviceName() func(handler *rest.RestHandler) (*models.
 	}
 }
 
+// SetDeviceName updates the device name.
 func (nm *NetworkMixin) SetDeviceName(deviceNameOption ...options.DeviceNameOption) func(handler *rest.RestHandler) (bool,
 	error) {
 
@@ -240,7 +241,7 @@ func (nm *NetworkMixin) SetDeviceName(deviceNameOption ...options.DeviceNameOpti
 			},
 		}
 
-		result, err := handler.Request("POST", payload, "SetNetPort")
+		result, err := handler.Request("POST", payload, "SetDevName")
 
 		if err != nil {
 			return false, err
@@ -259,5 +260,47 @@ func (nm *NetworkMixin) SetDeviceName(deviceNameOption ...options.DeviceNameOpti
 		}
 
 		return false, fmt.Errorf("camera could not set device name. camera responded with %v", result.Value)
+	}
+}
+
+// SetDeviceTime updates the device name.
+func (nm *NetworkMixin) SetDeviceTime(deviceTimeOption ...options.DeviceTimeOption) func(handler *rest.RestHandler) (bool,
+	error) {
+
+	// Defaults
+	deviceTime := &models.DeviceTime{}
+	for _, op := range deviceTimeOption {
+		op(deviceTime)
+	}
+
+	data, _ := json.Marshal(deviceTime)
+	var param map[string]interface{}
+	_ = json.Unmarshal(data, &param)
+	return func(handler *rest.RestHandler) (bool, error) {
+		payload := map[string]interface{}{
+			"cmd":    "SetTime",
+			"action": 0,
+			"param":  param,
+		}
+
+		result, err := handler.Request("POST", payload, "SetTime")
+
+		if err != nil {
+			return false, err
+		}
+
+		var respCode int
+
+		err = json.Unmarshal(result.Value["rspCode"], &respCode)
+
+		if err != nil {
+			return false, err
+		}
+
+		if respCode == 200 {
+			return true, nil
+		}
+
+		return false, fmt.Errorf("camera could not set device time. camera responded with %v", result.Value)
 	}
 }

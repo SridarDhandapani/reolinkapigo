@@ -20,7 +20,7 @@ type DstInformation struct {
 type TimeInformation struct {
 	Day      int    `json:"day"`
 	Hour     int    `json:"hour"`
-	HourFmt  bool   `json:"hourFmt"`
+	HourFmt  int    `json:"hourFmt"`
 	Min      int    `json:"min"`
 	Mon      int    `json:"mon"`
 	Sec      int    `json:"sec"`
@@ -66,4 +66,9 @@ type DeviceGeneralInformation struct {
 
 type DeviceName struct {
 	Name string `json:"name"`
+}
+
+type DeviceTime struct {
+	Dst  *DstInformation  `json:"Dst,omitempty"`
+	Time *TimeInformation `json:"Time,omitempty"`
 }
